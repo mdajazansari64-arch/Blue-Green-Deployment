@@ -21,6 +21,12 @@ pipeline {
             }
         }
 
+        stage('Kubernetes Connection Check') {
+            steps {
+                bat 'kubectl --kubeconfig "C:\\ProgramData\\Jenkins\\.kube\\config" get nodes'
+            }
+        }
+
         stage('Build Blue Image') {
             steps {
                 bat 'docker build -t blue-app:v1 -f app/Dockerfile app/blue'
