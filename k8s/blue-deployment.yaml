@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 
@@ -20,7 +21,7 @@ spec:
     spec:
       containers:
         - name: blue-container
-          image: blue-app:v1
-          imagePullPolicy: Never
+          image: ajazaj/blue-app:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
