@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -29,6 +30,27 @@ pipeline {
         stage('Build Green Image') {
             steps {
                 bat 'docker build -t green-app:v2 -f app/Dockerfile app/green'
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-pat-new',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    bat '''
+                        docker login -u "%DOCKER_USER%" --password-stdin
+                    '''.replace('docker login -u "%DOCKER_USER%" --password-stdin',
+                               'echo %DOCKER_PASS% | docker login -u "%DOCKER_USER%" --password-stdin')
+
+                    bat 'docker tag blue-app:v1 %DOCKER_USER%/blue-app:v1'
+                    bat 'docker tag green-app:v2 %DOCKER_USER%/green-app:v2'
+
+                    bat 'docker push %DOCKER_USER%/blue-app:v1'
+                    bat 'docker push %DOCKER_USER%/green-app:v2'
+                }
             }
         }
     }
