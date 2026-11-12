@@ -62,5 +62,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                bat 'kubectl --kubeconfig "C:\\ProgramData\\Jenkins\\.kube\\config" apply -f k8s/blue-deployment.yaml'
+
+                bat 'kubectl --kubeconfig "C:\\ProgramData\\Jenkins\\.kube\\config" apply -f k8s/green-deployment.yaml'
+
+                bat 'kubectl --kubeconfig "C:\\ProgramData\\Jenkins\\.kube\\config" rollout status deployment/blue-deployment -n blue-green'
+
+                bat 'kubectl --kubeconfig "C:\\ProgramData\\Jenkins\\.kube\\config" rollout status deployment/green-deployment -n blue-green'
+            }
+        }
     }
 }
